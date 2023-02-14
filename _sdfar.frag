@@ -10,9 +10,9 @@ uniform float u_time;
 #include "lygia/space/ratio.glsl"
 #include "lygia/space/rotate.glsl"
 #include "lygia/math/map.glsl"
+#include "lygia/math/smootherstep.glsl"
 #include "lygia/draw/digits.glsl"
 #include "lygia/sdf/circleSDF.glsl"
-#include "lygia/sdf/crossSDF.glsl"
 #include "lygia/sdf/starSDF.glsl"
 #include "lygia/animation/easing.glsl"
 
@@ -22,8 +22,7 @@ float wipe(float offset) {
 
 void main(){
   //init stuff:
-  float ancho = 0.5;
-  float fade = 0.5;
+  float ancho = 0.6;
 
   vec3 color = vec3(0.0);
   vec2 st = gl_FragCoord.xy/u_resolution.xy;
@@ -37,21 +36,10 @@ void main(){
   st_b = ratio(st_b, u_resolution);
   // st_b = brick(st_b, 4.0);
   st_b = rotate(st_b, sizer * cdistance);
-  // color += 2.5 * cos(5.0 * starSDF(st, 5, wipe(.0)));
-  // color /= cos(4.9 * starSDF(st, 5, wipe(.1)));
-  // color /= cos(4.8 * starSDF(st, 5, wipe(.5)));
 
-  // color.r += .5 * cos(20.0 * starSDF(st_b, 5, wipe(.00)))+.5;
-  // color.g += .5 * cos(19.6 * starSDF(st_b, 5, wipe(.03)))+.5;
-  // color.b += .5 * cos(19.8 * starSDF(st_b, 5, wipe(.06)))+.5;
-
-  color.r += step(0.5, cos(20.0 * starSDF(st_b, 5, wipe(.00))) * .5 +.5);
-  color.g += step(0.5, cos(19.6 * starSDF(st_b, 5, wipe(.03))) * .5 +.5);
-  color.b += step(0.5, cos(19.8 * starSDF(st_b, 5, wipe(.06))) * .5 +.5);
-  
-  // color.r += 2.5 * cos(20.0 * crossSDF(st_b, wipe(.00)));
-  // color.g += 2.5 * cos(19.6 * crossSDF(st_b, wipe(.03)));
-  // color.b += 2.5 * cos(19.8 * crossSDF(st_b, wipe(.06)));
+  color += smootherstep(1.0-ancho, ancho, cos(20.0 * starSDF(st_b, 5, wipe(.00))) * .5 +.5);
+  // color.g += smootherstep(1.0-ancho, ancho, cos(19.6 * starSDF(st_b, 5, wipe(.03))) * .5 +.5);
+  // color.b += smootherstep(1.0-ancho, ancho, cos(19.8 * starSDF(st_b, 5, wipe(.06))) * .5 +.5);
   
   // color *= circleSDF(st_b);
   
